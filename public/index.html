@@ -18,22 +18,29 @@
     jQuery('#number').html(counter.getCount());
   };
 
+  /**
+   * Pusher configurations.
+   */
+  var pusher = new Pusher('098255863b868991803c');
+  var channel = pusher.subscribe('test_channel');
+  // Enable pusher logging - don't include this in production
+  Pusher.log = function(message) {
+    if (window.console && window.console.log) window.console.log(message);
+  };
+  // Flash fallback logging - don't include this in production
+  WEB_SOCKET_DEBUG = true;
+
+  var dispatcher;
+
   jQuery(function () {
-    var counter = new Counter(10);
-    counter.addObserver(new Renderer);
-    var dispatcher = new Dispatcher(counter, 5);
-    dispatcher.dispatch();
+    channel.bind('begin', function(data) {
+      var counter = new Counter(data.count);
+      counter.addObserver(new Renderer);
+      dispatcher = new Dispatcher(counter, 5);
+      dispatcher.dispatch();
+    });
 
-    // Enable pusher logging - don't include this in production
-    Pusher.log = function(message) {
-      if (window.console && window.console.log) window.console.log(message);
-    };
-    // Flash fallback logging - don't include this in production
-    WEB_SOCKET_DEBUG = true;
-
-    var pusher = new Pusher('098255863b868991803c');
-    var channel = pusher.subscribe('test_channel');
-    channel.bind('my_event', function(data) {
+    channel.bind('end', function(data) {
       dispatcher.destroy();
     });
   });
