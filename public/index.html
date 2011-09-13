@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>KJBK</title>
+  <script type="text/javascript" src="./javascript/jquery.js"></script>
+  <script type="text/javascript" src="./javascript/Counter.js"></script>
+  <script type="text/javascript" src="./javascript/Dispatcher.js"></script>
+  <script type="text/javascript">
+  /**
+   * レンダラ.
+   */
+  var Renderer = function () {
+  };
+
+  Renderer.prototype.update = function (counter) {
+    jQuery('#number').html(counter.getCount());
+  };
+
+  jQuery(function () {
+    var counter = new Counter(10);
+    counter.addObserver(new Renderer);
+    var dispatcher = new Dispatcher(counter, 100);
+    dispatcher.dispatch();
+  });
+  </script>
+</head>
+<body>
+  <div id="number"></div>
+</body>
+</html>
